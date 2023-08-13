@@ -1,5 +1,5 @@
 {
-  "name": "helloworld",
+  "name": "vscode-peek",
   "displayName": "",
   "description": "",
   "version": "0.0.1",
@@ -12,12 +12,64 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "helloworld.helloWorld",
-        "title": "Hello World"
+    "commands": [],
+    "configuration": {
+      "type": "object",
+      "title": "Vscode Peek",
+      "properties": {
+        "vscode_peek.activeLanguages": {
+          "type": "array",
+          "default": [
+            "sql",
+            "yaml",
+            "markdown"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of vscode language names where the extension should be used."
+        },
+        "vscode_peek.definitionFilePatterns": {
+          "type": "array",
+          "default": ["**/.sql", ".yaml"],
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of extensions that should be tried for finding peeked files},"
+        },
+        "vscode_peek.definitionMatchPattern": {
+          "type": "string",
+          "default": "",
+          "description": "A regular expression pattern for matching file names."
+        },
+        "vscode_peek.implementationFilePatterns": {
+          "type": "array",
+          "default": ["**/.sql", ".yaml"],
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of extensions that should be tried for finding peeked files},"
+        },
+        "vscode_peek.implementationMatchPattern": {
+          "type": "string",
+          "default": "",
+          "description": "A regular expression pattern for matching file names."
+        },
+        "vscode_peek.declarationFilePatterns": {
+          "type": "array",
+          "default": ["**/.sql", ".yaml"],
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of extensions that should be tried for finding peeked files},"
+        },
+        "vscode_peek.declarationMatchPattern": {
+          "type": "string",
+          "default": "",
+          "description": "A regular expression pattern for matching file names."
+        }
       }
-    ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
