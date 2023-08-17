@@ -8,7 +8,7 @@ class PeekFileBaseProvider {
   constructor(filePatterns: vscode.GlobPattern[], matchPattern: string) {
     this.locations = [];
     this.filePatterns = filePatterns;
-    this.matchPattern = new RegExp(matchPattern);
+    this.matchPattern = new RegExp(matchPattern, 'i');
   }
 
   protected async handleFile(file: vscode.Uri, word: string) {
@@ -24,7 +24,8 @@ class PeekFileBaseProvider {
       console.error(`Error reading file: ${file.fsPath}`, error);
     }
   }
-
+  
+  
   protected async traverseFiles(word: string) {
     const files = await this.findFiles();
     for await (const file of this.iterateFiles(files, word)) {
@@ -33,11 +34,16 @@ class PeekFileBaseProvider {
   }
 
   private async findFiles(): Promise<vscode.Uri[]> {
-    const patternFilesPromises = this.filePatterns.map((pattern) =>
-      vscode.workspace.findFiles(pattern)
-    );
+    const patternFilesPromises = this.filePatterns.map((pattern) => {
+      console.log(`Searching files with pattern: ${pattern}`);
+      return vscode.workspace.findFiles(pattern);
+    });
+    console.log(patternFilesPromises.toString());
     const patternFilesArrays = await Promise.all(patternFilesPromises);
-    return patternFilesArrays.flat();
+    console.log('Pattern files:', patternFilesArrays);
+    const files = patternFilesArrays.flat();
+    console.log('Found files:', files);
+    return files;
   }
 
   private async *iterateFiles(
@@ -52,15 +58,14 @@ class PeekFileBaseProvider {
 
 class PeekFileDefinitionProvider
   extends PeekFileBaseProvider
-  implements vscode.DefinitionProvider
-{
+  implements vscode.DefinitionProvider {
   async provideDefinition(
     document: vscode.TextDocument,
     position: vscode.Position
   ): Promise<vscode.Location[] | undefined> {
     const word = document.getText(document.getWordRangeAtPosition(position));
     this.matchPattern = new RegExp(
-      this.matchPattern.source.replace(/{word}/g, word)
+      this.matchPattern.source.replace(/{word}/i, word),'i'
     );
     await this.traverseFiles(word);
     return this.locations;
@@ -69,15 +74,14 @@ class PeekFileDefinitionProvider
 
 class PeekFileImplementationProvider
   extends PeekFileBaseProvider
-  implements vscode.ImplementationProvider
-{
+  implements vscode.ImplementationProvider {
   async provideImplementation(
     document: vscode.TextDocument,
     position: vscode.Position
   ): Promise<vscode.Location[] | undefined> {
     const word = document.getText(document.getWordRangeAtPosition(position));
     this.matchPattern = new RegExp(
-      this.matchPattern.source.replace(/{word}/g, word)
+      this.matchPattern.source.replace(/{word}/i, word),'i'
     );
     await this.traverseFiles(word);
     return this.locations;
@@ -86,8 +90,7 @@ class PeekFileImplementationProvider
 
 class PeekFileDeclarationProvider
   extends PeekFileBaseProvider
-  implements vscode.DeclarationProvider
-{
+  implements vscode.DeclarationProvider {
   async provideDeclaration(
     document: vscode.TextDocument,
     position: vscode.Position
@@ -96,7 +99,7 @@ class PeekFileDeclarationProvider
   > {
     const word = document.getText(document.getWordRangeAtPosition(position));
     this.matchPattern = new RegExp(
-      this.matchPattern.source.replace(/{word}/g, word)
+      this.matchPattern.source.replace(/{word}/i, word),'i'
     );
     await this.traverseFiles(word);
     return this.locations;
@@ -132,6 +135,8 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  console.log("Workspace path:", vscode.workspace.workspaceFolders?.[0]?.uri.fsPath);
+
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider(
       peekFilter,
@@ -161,6 +166,10 @@ export function activate(context: vscode.ExtensionContext) {
       )
     )
   );
+
+  console.log("Extension activated");
 }
 
-export function deactivate() {}
+export function deactivate() {
+  console.log("Extension deactivated");
+}

@@ -1,71 +1,59 @@
-# helloworld README
+# vscode_peek
 
-This is the README for your extension "helloworld". After writing up a brief description, we recommend including the following sections.
+This is the README for the `vscode_peek` extension. Here is a description of the extension and instructions on how to use it.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+The `vscode_peek` extension provides peek functionality for definitions, implementations, and declarations in Visual Studio Code. It allows you to quickly navigate to the source code of symbols within your workspace.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+There are no specific requirements or dependencies for this extension.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+The `vscode_peek` extension contributes the following settings:
 
-For example:
+- `vscode_peek.activeLanguages`: An array of languages for which the peek functionality should be enabled.
+- `vscode_peek.definitionFilePatterns`: An array of file patterns to search for when providing definition peek.
+- `vscode_peek.definitionMatchPattern`: A regular expression pattern used to match the definition within a file.
+- `vscode_peek.implementationFilePatterns`: An array of file patterns to search for when providing implementation peek.
+- `vscode_peek.implementationMatchPattern`: A regular expression pattern used to match the implementation within a file.
+- `vscode_peek.declarationFilePatterns`: An array of file patterns to search for when providing declaration peek.
+- `vscode_peek.declarationMatchPattern`: A regular expression pattern used to match the declaration within a file.
 
-This extension contributes the following settings:
+## Usage
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+1. Install the `vscode_peek` extension.
+1. Configure the extension settings in your Visual Studio Code workspace settings.
+1. Open a file in your workspace.
+1. Place the cursor on a symbol (e.g., a function, class, or variable) that you want to peek.
+1. Use the appropriate keyboard shortcut (depends on your platform) or right-click and select the desired peek option from the context menu.
+1. The extension will search for the symbol in the specified file patterns and display the corresponding locations where the symbol is defined, implemented, or declared.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+There are no known issues with this extension.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
+- Initial release of the `vscode_peek` extension.
 
 ### 1.1.0
 
-Added features X, Y, and Z.
+- Added support for multiple programming languages.
+- Improved performance and reliability.
 
----
+______________________________________________________________________
 
-## Following extension guidelines
+## Contribution
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+Contributions to the `vscode_peek` extension are welcome. Please follow the [contribution guidelines](CONTRIBUTING.md) when making contributions.
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+## License
 
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+This extension is licensed under the [MIT License](LICENSE).
 
 **Enjoy!**

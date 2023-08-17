@@ -33,7 +33,7 @@
         },
         "vscode_peek.definitionFilePatterns": {
           "type": "array",
-          "default": ["**/.sql", ".yaml"],
+          "default": ["**/*.sql"],
           "items": {
             "type": "string"
           },
@@ -41,12 +41,12 @@
         },
         "vscode_peek.definitionMatchPattern": {
           "type": "string",
-          "default": "",
+          "default": "table\\s*\\w*\\.{word}",
           "description": "A regular expression pattern for matching file names."
         },
         "vscode_peek.implementationFilePatterns": {
           "type": "array",
-          "default": ["**/.sql", ".yaml"],
+          "default": ["**/*.sql"],
           "items": {
             "type": "string"
           },
@@ -54,12 +54,12 @@
         },
         "vscode_peek.implementationMatchPattern": {
           "type": "string",
-          "default": "",
+          "default": "table\\s*\\w*\\.{word}",
           "description": "A regular expression pattern for matching file names."
         },
         "vscode_peek.declarationFilePatterns": {
           "type": "array",
-          "default": ["**/.sql", ".yaml"],
+          "default": ["**/*.sql"],
           "items": {
             "type": "string"
           },
@@ -67,7 +67,7 @@
         },
         "vscode_peek.declarationMatchPattern": {
           "type": "string",
-          "default": "",
+          "default": "(?:FROM|JOIN)\\s*\\w*\\.{word}",
           "description": "A regular expression pattern for matching file names."
         }
       }

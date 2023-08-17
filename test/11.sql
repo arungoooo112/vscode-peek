@@ -1,0 +1,1 @@
+create table shcema.my_table_t
