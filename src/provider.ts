@@ -25,17 +25,8 @@ class PeekFileBaseProvider {
     }
   }
 
-  private async *iterateFiles(
-    files: vscode.Uri[],
-    word: string
-  ): AsyncIterableIterator<vscode.Uri> {
-    for (const file of files) {
-      yield file;
-    }
-  }
-
   private async traverseFiles(word: string): Promise<vscode.Location[]>{
-    for await (const file of this.iterateFiles(this.searchFiles, word)) {
+    for (const file of this.searchFiles) {
       await this.handleFile(file, word);
     }
     return this.locations.get(word) ?? [];
@@ -43,14 +34,10 @@ class PeekFileBaseProvider {
 
   private async findFiles(filePatterns: vscode.GlobPattern[]): Promise<vscode.Uri[]> {
     const patternFilesPromises = filePatterns.map((pattern) => {
-      console.log(`Searching files with pattern: ${pattern}`);
       return vscode.workspace.findFiles(pattern);
     });
-    console.log(patternFilesPromises.toString());
     const patternFilesArrays = await Promise.all(patternFilesPromises);
-    console.log('Pattern files:', patternFilesArrays);
     const files = patternFilesArrays.flat();
-    console.log('Found files:', files);
     return files;
   }
 
