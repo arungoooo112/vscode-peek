@@ -1,113 +1,5 @@
 import * as vscode from "vscode";
-
-//初始化 defitionfilecache， 保存搜索内容和location数组
-class PeekFileBaseProvider {
-  protected locations: vscode.Location[];
-  protected filePatterns: vscode.GlobPattern[];
-  protected matchPattern: RegExp;
-
-  constructor(filePatterns: vscode.GlobPattern[], matchPattern: string) {
-    this.locations = [];
-    this.filePatterns = filePatterns;
-    this.matchPattern = new RegExp(matchPattern, 'i');
-  }
-
-  protected async handleFile(file: vscode.Uri, word: string) {
-    try {
-      const fileContentBytes = await vscode.workspace.fs.readFile(file);
-      const fileContent = Buffer.from(fileContentBytes).toString("utf8");
-      if (this.matchPattern.test(fileContent)) {
-        this.locations.push(
-          new vscode.Location(file, new vscode.Position(0, 0))
-        );
-      }
-    } catch (error) {
-      console.error(`Error reading file: ${file.fsPath}`, error);
-    }
-  }
-
-  protected async traverseFiles(word: string) {
-    const files = await this.findFiles();
-    for await (const file of this.iterateFiles(files, word)) {
-      await this.handleFile(file, word);
-    }
-  }
-
-  private async findFiles(): Promise<vscode.Uri[]> {
-    const patternFilesPromises = this.filePatterns.map((pattern) => {
-      console.log(`Searching files with pattern: ${pattern}`);
-      return vscode.workspace.findFiles(pattern);
-    });
-    console.log(patternFilesPromises.toString());
-    const patternFilesArrays = await Promise.all(patternFilesPromises);
-    console.log('Pattern files:', patternFilesArrays);
-    const files = patternFilesArrays.flat();
-    console.log('Found files:', files);
-    return files;
-  }
-
-  private async *iterateFiles(
-    files: vscode.Uri[],
-    word: string
-  ): AsyncIterableIterator<vscode.Uri> {
-    for (const file of files) {
-      yield file;
-    }
-  }
-
-  protected async provide(document: vscode.TextDocument,
-    position: vscode.Position) {
-    const word = document.getText(document.getWordRangeAtPosition(position));
-    this.matchPattern = new RegExp(
-      this.matchPattern.source.replace(/{word}/i, word), 'i'
-    );
-    await this.traverseFiles(word);
-  }
-}
-
-class PeekFileDefinitionProvider
-  extends PeekFileBaseProvider
-  implements vscode.DefinitionProvider {
-  async provideDefinition(
-    document: vscode.TextDocument,
-    position: vscode.Position
-  ): Promise<vscode.Location[] | undefined> {
-    await this.provide(document, position);
-    const res = this.locations;
-    this.locations = [];
-    return res;
-  }
-}
-
-class PeekFileImplementationProvider
-  extends PeekFileBaseProvider
-  implements vscode.ImplementationProvider {
-  async provideImplementation(
-    document: vscode.TextDocument,
-    position: vscode.Position
-  ): Promise<vscode.Location[] | undefined> {
-    await this.provide(document, position);
-    const res = this.locations;
-    this.locations = [];
-    return res;
-  }
-}
-
-class PeekFileDeclarationProvider
-  extends PeekFileBaseProvider
-  implements vscode.DeclarationProvider {
-  async provideDeclaration(
-    document: vscode.TextDocument,
-    position: vscode.Position
-  ): Promise<
-    vscode.Location | vscode.Location[] | vscode.LocationLink[] | undefined
-  > {
-    await this.provide(document, position);
-    const res = this.locations;
-    this.locations = [];
-    return res;
-  }
-}
+import * as provider from './provider';
 
 export function activate(context: vscode.ExtensionContext) {
   const config = vscode.workspace.getConfiguration("vscode_peek");
@@ -143,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider(
       peekFilter,
-      new PeekFileDefinitionProvider(
+      new provider.PeekFileDefinitionProvider(
         definitionFilePatterns,
         definitionMatchPattern
       )
@@ -153,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerImplementationProvider(
       peekFilter,
-      new PeekFileImplementationProvider(
+      new provider.PeekFileImplementationProvider(
         implementationFilePatterns,
         implementationMatchPattern
       )
@@ -163,7 +55,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerDeclarationProvider(
       peekFilter,
-      new PeekFileDeclarationProvider(
+      new provider.PeekFileDeclarationProvider(
         declarationFilePatterns,
         declarationMatchPattern
       )
