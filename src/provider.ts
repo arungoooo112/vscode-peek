@@ -24,13 +24,6 @@ class PeekFileBaseProvider {
     }
   }
 
-  private async traverseFiles(word: string): Promise<vscode.Location[]>{
-    for (const file of this.searchFiles) {
-      await this.handleFile(file, word);
-    }
-    return this.locations.get(word) ?? [];
-  }
-
   private async findFiles(filePatterns: vscode.GlobPattern[]): Promise<vscode.Uri[]> {
     const patternFilesPromises = filePatterns.map((pattern) => {
       return vscode.workspace.findFiles(pattern);
@@ -49,7 +42,10 @@ class PeekFileBaseProvider {
     this.matchPattern = new RegExp(
       this.matchPattern.source.replace(/{word}/i, word), 'i'
     );
-    return this.traverseFiles(word);
+    for (const file of this.searchFiles) {
+      await this.handleFile(file, word);
+    }
+    return this.locations.get(word) ?? [];
   }
 }
 
