@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 
-//初始化 defitionfilecache， 保存搜索内容和location数组
 class PeekFileBaseProvider {
   protected locations: Map<string, vscode.Location[]>;
   protected matchPattern: RegExp;
