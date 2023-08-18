@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 
+//初始化 defitionfilecache， 保存搜索内容和location数组
 class PeekFileBaseProvider {
   protected locations: vscode.Location[];
   protected filePatterns: vscode.GlobPattern[];
@@ -24,8 +25,7 @@ class PeekFileBaseProvider {
       console.error(`Error reading file: ${file.fsPath}`, error);
     }
   }
-  
-  
+
   protected async traverseFiles(word: string) {
     const files = await this.findFiles();
     for await (const file of this.iterateFiles(files, word)) {
@@ -54,6 +54,15 @@ class PeekFileBaseProvider {
       yield file;
     }
   }
+
+  protected async provide(document: vscode.TextDocument,
+    position: vscode.Position) {
+    const word = document.getText(document.getWordRangeAtPosition(position));
+    this.matchPattern = new RegExp(
+      this.matchPattern.source.replace(/{word}/i, word), 'i'
+    );
+    await this.traverseFiles(word);
+  }
 }
 
 class PeekFileDefinitionProvider
@@ -63,12 +72,10 @@ class PeekFileDefinitionProvider
     document: vscode.TextDocument,
     position: vscode.Position
   ): Promise<vscode.Location[] | undefined> {
-    const word = document.getText(document.getWordRangeAtPosition(position));
-    this.matchPattern = new RegExp(
-      this.matchPattern.source.replace(/{word}/i, word),'i'
-    );
-    await this.traverseFiles(word);
-    return this.locations;
+    await this.provide(document, position);
+    const res = this.locations;
+    this.locations = [];
+    return res;
   }
 }
 
@@ -79,12 +86,10 @@ class PeekFileImplementationProvider
     document: vscode.TextDocument,
     position: vscode.Position
   ): Promise<vscode.Location[] | undefined> {
-    const word = document.getText(document.getWordRangeAtPosition(position));
-    this.matchPattern = new RegExp(
-      this.matchPattern.source.replace(/{word}/i, word),'i'
-    );
-    await this.traverseFiles(word);
-    return this.locations;
+    await this.provide(document, position);
+    const res = this.locations;
+    this.locations = [];
+    return res;
   }
 }
 
@@ -97,22 +102,22 @@ class PeekFileDeclarationProvider
   ): Promise<
     vscode.Location | vscode.Location[] | vscode.LocationLink[] | undefined
   > {
-    const word = document.getText(document.getWordRangeAtPosition(position));
-    this.matchPattern = new RegExp(
-      this.matchPattern.source.replace(/{word}/i, word),'i'
-    );
-    await this.traverseFiles(word);
-    return this.locations;
+    await this.provide(document, position);
+    const res = this.locations;
+    this.locations = [];
+    return res;
   }
 }
 
 export function activate(context: vscode.ExtensionContext) {
   const config = vscode.workspace.getConfiguration("vscode_peek");
   const activeLanguages = config.get("activeLanguages") as string[];
+
   const definitionFilePatterns = config.get(
     "definitionFilePatterns"
   ) as vscode.GlobPattern[];
-  const definitionMatchPattern = config.get("definitionMatchPattern") as string;
+  const definitionMatchPattern = config.get(
+    "definitionMatchPattern") as string;
 
   const implementationFilePatterns = config.get(
     "ImplementationFilePatterns"
@@ -134,8 +139,6 @@ export function activate(context: vscode.ExtensionContext) {
       scheme: "file",
     })
   );
-
-  console.log("Workspace path:", vscode.workspace.workspaceFolders?.[0]?.uri.fsPath);
 
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider(
