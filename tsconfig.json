@@ -14,14 +14,3 @@
 		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
 	}
 }
-是一个TypeScript编译器的配置文件(tsconfig.json)。它指定了TypeScript项目的编译器选项和设置。以下是代码中指定的选项的解释：
- "module": "commonjs"：指定项目的模块代码生成方式。在这种情况下，它被设置为commonjs，这是Node.js使用的模块系统。
- "target": "ES2020"：指定编译后的JavaScript代码的ECMAScript目标版本。在这种情况下，它被设置为ES2020，表示代码应被编译为ECMAScript 2020语法。
- "lib": ["ES2020"]：指定要包含在编译过程中的库文件。在这种情况下，它包括ECMAScript 2020库。
-"sourceMap": true：在编译过程中启用源映射文件(.map)的生成。源映射在调试过程中非常有用，因为它们将编译后的JavaScript代码映射回原始的TypeScript代码。
-"rootDir": "src"：指定TypeScript源文件的根目录。编译器只会考虑该目录及其子目录中的文件。
-"strict": true：启用所有严格的类型检查选项。当设置为true时，TypeScript会执行更严格的类型检查规则，以帮助在开发过程中捕获潜在的错误。
-其他检查（被注释掉的部分）：
-"noImplicitReturns": true：启用后，TypeScript会在函数中的所有代码路径都没有返回值时报告错误。这有助于确保处理所有可能的执行路径。
-"noFallthroughCasesInSwitch": true：启用后，TypeScript会在switch语句中的遗漏case中报告错误。当case块没有break语句并且执行流程继续到下一个case时，就会发生遗漏。
-"noUnusedParameters": true：启用后，TypeScript会报告函数中未使用的参数的错误。这有助于识别和删除代码中未使用的变量。
