@@ -77,6 +77,7 @@ class PeekFileBaseProvider implements vscode.DefinitionProvider, vscode.Implemen
       disposable.dispose();
     }
     this.disposables = [];
+    
   }
 }
 
